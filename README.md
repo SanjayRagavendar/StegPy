@@ -55,7 +55,44 @@ cd StegPy
 pip install -r requirements.txt
 ```
 ### Usage:
-
+#### main.py:
+This main file consists the varities of options to choose the encription for differnt medias.
+```
+python3 main.py
+```
+```
+Type of Steganography:
+    1. Text in Image Steganography-steg_image.py
+    2. Text in Audio Steganography-steg_audio.py
+    3. Text in Video Steganography-steg_video.py
+    4. Text in Text Steganography-steg_text_text.py
+    5. Image in Image Steganography-steg_image_image.py
+```
+#### steg_image.py:
+This file is used to encode and decode the text in an image.
+```
+python3 steg_image.py
+```
+#### steg_image_image.py:
+This file is used to encode and decode the image in an image.
+```
+python3 steg_image_image.py
+```
+#### steg_video.py:
+This file is ude to encode and decode the text ia a video.
+```
+python3 steg_video.py
+```
+#### steg_audio.py:
+This file is used to encode and decode the text in an audio.
+```
+python3 steg_audio.py
+```
+#### steg_text_text.py
+This file is used to encode and decode the text in a text.
+```
+python3 steg_text_text.py
+```
 ### Contributing:
 Contributions are welcome! To contribute to this project, follow these steps:
 ```
