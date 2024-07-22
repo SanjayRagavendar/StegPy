@@ -2,9 +2,9 @@ import colorama
 from colorama import Fore, Style
 from Steg_Files.steg_image import encode_text_in_image, decode_text_from_image
 from Steg_Files.steg_audio import encode_text_in_audio_wav,decode_text_in_audio_wav
-from Steg_Files.steg_video import *
-from Steg_Files.steg_image_image import encode_image_in_image, decode_image_from_image  
-from Steg_Files.steg_text_text import encode_text_in_text, decode_text_from_text
+from Steg_Files.steg_video import encode_vid_data,decode_vid_data
+from Steg_Files.steg_image_image import encode_image_in_image, decode_image_in_image  
+from Steg_Files.steg_text_text import encode_text_in_text, decode_text_in_text
 
 
 colorama.init()
@@ -15,12 +15,12 @@ def xor_encrypt_decrypt(text, key):
 
 if __name__=="__main__":
     print(Fore.YELLOW + Style.BRIGHT + """
-███████╗████████╗███████╗ ██████╗ ███╗   ██╗ ██████╗ ██████╗ ██╗   ██╗
-██╔════╝╚══██╔══╝██╔════╝██╔════╝ ████╗  ██║██╔═══██╗██╔══██╗╚██╗ ██╔╝
-███████╗   ██║   █████╗  ██║  ███╗██╔██╗ ██║██║   ██║██████╔╝ ╚████╔╝ 
-╚════██║   ██║   ██╔══╝  ██║   ██║██║╚██╗██║██║   ██║██╔═══╝   ╚██╔╝  
-███████║   ██║   ███████╗╚██████╔╝██║ ╚████║╚██████╔╝██║        ██║   
-╚══════╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚═╝        ╚═╝   
+███████╗████████╗███████╗ ██████╗ ██████╗ ██╗   ██╗
+██╔════╝╚══██╔══╝██╔════╝██╔════╝ ██╔══██╗╚██╗ ██╔╝
+███████╗   ██║   █████╗  ██║  ███╗██████╔╝ ╚████╔╝ 
+╚════██║   ██║   ██╔══╝  ██║   ██║██╔═══╝   ╚██╔╝  
+███████║   ██║   ███████╗╚██████╔╝██║        ██║   
+╚══════╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝        ╚═╝   
                                                     - by ROOT Squad  
 """ + Style.RESET_ALL)
 
@@ -107,17 +107,11 @@ Enter The Type of Steganography: """ + Style.RESET_ALL,end="")
         if option == 1:
             video_path = input("Enter the video path: ")
             text = input("Enter the text to hide: ")
-            key = input("Enter the key (If the key is not required press Enter): ")
-            if key != "":
-                text = xor_encrypt_decrypt(text, key)
-            hide_text_in_video(video_path, text)
+            encode_vid_data(video_path, text)
             print(Fore.YELLOW + "Text hidden successfully in the video." + Style.RESET_ALL)
         elif option == 2:
             video_path = input("Enter the video path: ")
-            text = extract_text_from_video(video_path)
-            key = input("Enter the key (If the key is not required press Enter): ")
-            if key != "":
-                text = xor_encrypt_decrypt(text, key)
+            text = decode_vid_data(video_path)
             print(Fore.YELLOW + "Extracted text from the video: " + Style.RESET_ALL, text)
         else:
             print(Fore.RED + "Invalid option selected." + Style.RESET_ALL)
@@ -144,7 +138,7 @@ Enter The Type of Steganography: """ + Style.RESET_ALL,end="")
         
         elif option == 2:
             input_path = input("Enter the path of the text file to decode: ")
-            text = decode_text_from_text(input_path)
+            text = decode_text_in_text(input_path)
             key = input("Enter the key (If the key is not required press Enter): ")
             if key != "":
                 text = xor_encrypt_decrypt(text, key)
@@ -172,7 +166,7 @@ Enter The Type of Steganography: """ + Style.RESET_ALL,end="")
         elif option == 2:
             encoded_image_path = input("Enter the encoded image path: ")
             output_image_path = input("Enter the output image path: ")
-            decode_image_from_image(encoded_image_path, output_image_path)
+            decode_image_in_image(encoded_image_path, output_image_path)
             print(Fore.YELLOW + "Extracted image from the image successfully." + Style.RESET_ALL)
 
     else:
