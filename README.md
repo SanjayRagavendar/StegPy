@@ -3,7 +3,7 @@ A tool for hiding secret information within various forms of media, such as imag
 
 ![ste](https://github.com/user-attachments/assets/37b7539b-bb2e-4dca-84c8-f2177c7727aa)
 
-### Table of Contents:
+## Table of Contents:
 1.Introduction
 
 2.Features
@@ -20,10 +20,18 @@ A tool for hiding secret information within various forms of media, such as imag
 
 8.Contact
 
-### Introduction:
+## Introduction:
 This project provides a comprehensive steganography tool that allows users to hide and retrieve secret messages within media files. Steganography is the practice of concealing messages or information within other non-secret text or data, and this project aims to make it easy and secure to perform such operations.
+### Text Steganography
+Text steganography involves hiding information inside text files.This approach leverages Unicode characters with zero visible width to hide information discreetly within text files. By converting text to binary and embedding it using predefined mappings to zero-width characters, the original cover message is modified subtly to contain the encoded secret message. The decoding process reverses this transformation to retrieve the hidden information. This technique can be useful for steganography purposes, where concealing data within seemingly innocuous content is desirable.
+### Image Steganography
+This technique utilizes LSB embedding to hide information within the image pixels' least significant bits. It allows for covert communication within digital images while preserving the visual integrity of the image to a large extent. This approach is commonly used in steganography to embed sensitive data discreetly within media files.
+### Audio Steganography
+This approach allows for hiding textual information within the least significant bits of audio samples in a WAV file, enabling covert communication or data embedding while maintaining the audio's overall integrity and quality. The technique is a form of steganography, where data is concealed within another type of data to avoid detection.
+### Video Steganography
+This video steganography implementation allows users to hide sensitive text messages within video files, ensuring covert communication. It leverages LSB manipulation to embed and extract data from video frames, maintaining video quality while concealing information. Encryption adds an additional layer of security to the hidden messages. This approach demonstrates a basic form of steganography suitable for educational or experimental purposes.
 
-### Features:
+## Features:
 ->Hide text messages within image files (JPEG, PNG)
 
 ->Retrieve hidden messages from image files
@@ -34,7 +42,7 @@ This project provides a comprehensive steganography tool that allows users to hi
 
 ->High-level security with optional encryption for hidden messages
 
-### Installation:
+## Installation:
 #### Prerequisites:
 ```
 Python 3.x
@@ -115,6 +123,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For questions or support, please reach out:
 
-Email: sanjayragavendar2610@gmail.com | vanithacgu@gmail.com | tejus9904@gmail.com | nandhakumar20043@gmail.com
+Email: sanjayragavendar2610@gmail.com | tejus9904@gmail.com | nandhakumar20043@gmail.com | vanithacgu@gmail.com 
 
 
