@@ -1,112 +1,172 @@
-import cv2
-import numpy as np
 
-def text_to_bin(text):
-    """Convert text to a binary string."""
-    binary = ''.join(format(ord(char), '08b') for char in text)
-    return binary
-
-def bin_to_text(binary):
-    """Convert a binary string to text."""
-    text = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
-    return text
-
-def hide_text_in_frame(frame, text):
-    """Hide text in a single frame."""
-    binary_text = text_to_bin(text)
-    binary_index = 0
-    max_len = len(binary_text)
-    rows, cols, _ = frame.shape
-
-    for row in range(rows):
-        for col in range(cols):
-            if binary_index < max_len:
-                r, g, b = frame[row, col]
-                r = (r & ~1) | int(binary_text[binary_index])  # Modify LSB of red channel
-                frame[row, col] = [r, g, b]
-                binary_index += 1
-            else:
-                break
-        if binary_index >= max_len:
-            break
-
-    return frame
-
-def extract_text_from_frame(frame, text_length):
-    """Extract hidden text from a single frame."""
-    binary_text = ''
-    rows, cols, _ = frame.shape
-    binary_index = 0
-    max_len = text_length * 8
-
-    for row in range(rows):
-        for col in range(cols):
-            if binary_index < max_len:
-                r, g, b = frame[row, col]
-                binary_text += str(r & 1)  # Extract LSB of red channel
-                binary_index += 1
-            else:
-                break
-        if binary_index >= max_len:
-            break
-
-    return bin_to_text(binary_text)
-
-def hide_text_in_video(input_video_path, output_video_path, text):
-    """Hide text in a video."""
-    cap = cv2.VideoCapture(input_video_path)
-    if not cap.isOpened():
-        print("Error: Cannot open video file.")
-        return
-
-    fourcc = cv2.VideoWriter_fourcc(*'x264')
-    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
-
-    if not out.isOpened():
-        print("Error: Cannot open output video file.")
-        return
-
+def vid_steg():
     while True:
-        ret, frame = cap.read()
-        if not ret:
+        print("\n\t\tVIDEO STEGANOGRAPHY OPERATIONS") 
+        print("1. Encode the Text message")  
+        print("2. Decode the Text message")  
+        print("3. Exit")  
+        choice1 = int(input("Enter the Choice:"))   
+        if choice1 == 1:
+            a=encode_vid_data()
+        elif choice1 == 2:
+            decode_vid_data(a)
+        elif choice1 == 3:
             break
+        else:
+            print("Incorrect Choice")
+        print("\n")
+def encode_vid_data():
+    cap=cv2.VideoCapture("Sample_cover_files/cover_video.mp4")
+    vidcap = cv2.VideoCapture("Sample_cover_files/cover_video.mp4")    
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    frame_width = int(vidcap.get(3))
+    frame_height = int(vidcap.get(4))
 
-        frame = hide_text_in_frame(frame, text)
+    size = (frame_width, frame_height)
+    out = cv2.VideoWriter('stego_video.mp4',fourcc, 25.0, size)
+    max_frame=0;
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == False:
+            break
+        max_frame+=1
+    cap.release()
+    print("Total number of Frame in selected Video :",max_frame)
+    print("Enter the frame number where you want to embed data : ")
+    n=int(input())
+    frame_number = 0
+    while(vidcap.isOpened()):
+        frame_number += 1
+        ret, frame = vidcap.read()
+        if ret == False:
+            break
+        if frame_number == n:    
+            change_frame_with = embed(frame)
+            frame_ = change_frame_with
+            frame = change_frame_with
         out.write(frame)
+    
+    print("\nEncoded the data successfully in the video file.")
+    return frame_
+def decode_vid_data(frame_):
+    cap = cv2.VideoCapture('stego_video.mp4')
+    max_frame=0;
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == False:
+            break
+        max_frame+=1
+    print("Total number of Frame in selected Video :",max_frame)
+    print("Enter the secret frame number from where you want to extract data")
+    n=int(input())
+    vidcap = cv2.VideoCapture('stego_video.mp4')
+    frame_number = 0
+    while(vidcap.isOpened()):
+        frame_number += 1
+        ret, frame = vidcap.read()
+        if ret == False:
+            break
+        if frame_number == n:
+            extract(frame_)
+            return
+def embed(frame):
+    data=input("\nEnter the data to be Encoded in Video :") 
+    data=encryption(data)
+    print("The encrypted data is : ",data)
+    if (len(data) == 0): 
+        raise ValueError('Data entered to be encoded is empty')
 
-    cap.release()
-    out.release()
-    print("Text hidden in video successfully.")
+    data +='*^*^*'
+    
+    binary_data=msgtobinary(data)
+    length_data = len(binary_data)
+    
+    index_data = 0
+    
+    for i in frame:
+        for pixel in i:
+            r, g, b = msgtobinary(pixel)
+            if index_data < length_data:
+                pixel[0] = int(r[:-1] + binary_data[index_data], 2) 
+                index_data += 1
+            if index_data < length_data:
+                pixel[1] = int(g[:-1] + binary_data[index_data], 2) 
+                index_data += 1
+            if index_data < length_data:
+                pixel[2] = int(b[:-1] + binary_data[index_data], 2) 
+                index_data += 1
+            if index_data >= length_data:
+                break
+        return frame
+def extract(frame):
+    data_binary = ""
+    final_decoded_msg = ""
+    for i in frame:
+        for pixel in i:
+            r, g, b = msgtobinary(pixel) 
+            data_binary += r[-1]  
+            data_binary += g[-1]  
+            data_binary += b[-1]  
+            total_bytes = [ data_binary[i: i+8] for i in range(0, len(data_binary), 8) ]
+            decoded_data = ""
+            for byte in total_bytes:
+                decoded_data += chr(int(byte, 2))
+                if decoded_data[-5:] == "*^*^*": 
+                    for i in range(0,len(decoded_data)-5):
+                        final_decoded_msg += decoded_data[i]
+                    final_decoded_msg = decryption(final_decoded_msg)
+                    print("\n\nThe Encoded data which was hidden in the Video was :--\n",final_decoded_msg)
+                    return
+def encryption(plaintext):
+    print("Enter the key : ")
+    key=input()
+    key=preparing_key_array(key)
 
-def extract_text_from_video(video_path, text_length):
-    """Extract hidden text from a video."""
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        print("Error: Cannot open video file.")
-        return None
+    S=KSA(key)
 
-    ret, frame = cap.read()
-    cap.release()
+    keystream=np.array(PRGA(S,len(plaintext)))
+    plaintext=np.array([ord(i) for i in plaintext])
 
-    if ret:
-        return extract_text_from_frame(frame, text_length)
-    else:
-        print("Error: Cannot read frame from video.")
-        return None
+    cipher=keystream^plaintext
+    ctext=''
+    for c in cipher:
+        ctext=ctext+chr(c)
+    return ctext
+def decryption(ciphertext):
+    print("Enter the key : ")
+    key=input()
+    key=preparing_key_array(key)
 
-# Example usage
-"""
-input_video = 'cover_video.mp4'
-output_video = 'output_with_hidden_text.avi'
-secret_text = 'Hello, this is a hidden message!'
+    S=KSA(key)
 
-# Hide text in video
-hide_text_in_video(input_video, output_video, secret_text)
+    keystream=np.array(PRGA(S,len(ciphertext)))
+    ciphertext=np.array([ord(i) for i in ciphertext])
 
-# Extract text from video
-extracted_text = extract_text_from_video(output_video, len(secret_text))
-print("Extracted Text:", extracted_text)
-"""
+    decoded=keystream^ciphertext
+    dtext=''
+    for c in decoded:
+        dtext=dtext+chr(c)
+    return dtext
+def KSA(key):
+    key_length = len(key)
+    S=list(range(256)) 
+    j=0
+    for i in range(256):
+        j=(j+S[i]+key[i % key_length]) % 256
+        S[i],S[j]=S[j],S[i]
+    return S
+def PRGA(S,n):
+    i=0
+    j=0
+    key=[]
+    while n>0:
+        n=n-1
+        i=(i+1)%256
+        j=(j+S[i])%256
+        S[i],S[j]=S[j],S[i]
+        K=S[(S[i]+S[j])%256]
+        key.append(K)
+    return key
+def preparing_key_array(s):
+    return [ord(c) for c in s]
+vid_steg()
