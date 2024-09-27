@@ -122,7 +122,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Contact:
 
 For questions or support, please reach out:
-
 Email: sanjayragavendar2610@gmail.com | tejus9904@gmail.com | nandhakumar20043@gmail.com | vanithacgu@gmail.com 
 
 
